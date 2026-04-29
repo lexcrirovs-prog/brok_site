@@ -45,12 +45,11 @@ async function ensureUploadDir(): Promise<string> {
 }
 
 async function resolveAccount(brokerId: string, accountName?: string): Promise<{ id: string; name: string }> {
-  const existing = await prisma.account.findFirst({
-    where: {
-      brokerId,
-      ...(accountName ? { name: { equals: accountName, mode: "insensitive" } } : {}),
-    },
-  });
+  const existing = accountName
+    ? (await prisma.account.findMany({ where: { brokerId } })).find(
+        (account) => account.name.toLocaleLowerCase("ru-RU") === accountName.toLocaleLowerCase("ru-RU"),
+      )
+    : await prisma.account.findFirst({ where: { brokerId } });
 
   if (existing) {
     return { id: existing.id, name: existing.name };

@@ -211,6 +211,20 @@ Systemd unit лежит в `deploy/brok-site.service`.
 
 Если на сервере уже есть конфиг домена, добавьте только блоки `location /invest/` и `location = /invest`.
 
+### Beget shared hosting
+
+Основная схема проекта остается PostgreSQL: `prisma/schema.prisma`.
+
+Для виртуального хостинга Beget без отдельной PostgreSQL-услуги есть deployment-only SQLite-схема:
+
+```bash
+DATABASE_URL="file:/home/p/premiuig/kotelgavno.ru/app-data/portfolio.db" npm run prisma:generate:sqlite
+DATABASE_URL="file:/home/p/premiuig/kotelgavno.ru/app-data/portfolio.db" npm run prisma:push:sqlite
+DATABASE_URL="file:/home/p/premiuig/kotelgavno.ru/app-data/portfolio.db" npm run prisma:seed
+```
+
+Так база и файлы остаются внутри аккаунта хостинга. Для возврата к PostgreSQL выполните `npm run prisma:generate`.
+
 ## Безопасность
 
 - файлы не отправляются на внешние сервисы;

@@ -1,0 +1,280 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum BrokerType {
+  TBANK
+  SBER
+  VTB
+  OTHER
+}
+
+enum AccountType {
+  BROKERAGE @map("brokerage")
+  IIS
+  OTHER     @map("other")
+}
+
+enum InstrumentType {
+  STOCK    @map("stock")
+  BOND     @map("bond")
+  FUND     @map("fund")
+  CURRENCY @map("currency")
+  CASH     @map("cash")
+  OTHER    @map("other")
+}
+
+enum OperationType {
+  BUY               @map("buy")
+  SELL              @map("sell")
+  DIVIDEND          @map("dividend")
+  COUPON            @map("coupon")
+  BOND_REDEMPTION   @map("bond_redemption")
+  TAX               @map("tax")
+  COMMISSION        @map("commission")
+  DEPOSIT           @map("deposit")
+  WITHDRAWAL        @map("withdrawal")
+  CURRENCY_EXCHANGE @map("currency_exchange")
+  BROKER_FEE        @map("broker_fee")
+  OTHER             @map("other")
+}
+
+enum ImportFileStatus {
+  UPLOADED     @map("uploaded")
+  PARSED       @map("parsed")
+  NEEDS_REVIEW @map("needs_review")
+  ERROR        @map("error")
+}
+
+enum ImportRowStatus {
+  RECOGNIZED   @map("recognized")
+  NEEDS_REVIEW @map("needs_review")
+  DUPLICATE    @map("duplicate")
+  CONFIRMED    @map("confirmed")
+  REJECTED     @map("rejected")
+}
+
+enum WatchlistStatus {
+  WATCHING @map("watching")
+  BOUGHT   @map("bought")
+  REJECTED @map("rejected")
+  ARCHIVED @map("archived")
+}
+
+enum InvestmentSourceType {
+  BLOGGER  @map("blogger")
+  ANALYST  @map("analyst")
+  OWN_IDEA @map("own_idea")
+  NEWS     @map("news")
+  REPORT   @map("report")
+  OTHER    @map("other")
+}
+
+enum InvestmentIdeaStatus {
+  ACTIVE   @map("active")
+  WORKED   @map("worked")
+  WRONG    @map("wrong")
+  ARCHIVED @map("archived")
+}
+
+enum PriceSourceType {
+  MANUAL     @map("manual")
+  CSV_IMPORT @map("csv_import")
+  API        @map("api")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Broker {
+  id          String       @id @default(cuid())
+  name        String
+  type        BrokerType
+  accounts    Account[]
+  importFiles ImportFile[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([type])
+}
+
+model Account {
+  id           String             @id @default(cuid())
+  brokerId     String
+  name         String
+  currency     String             @default("RUB")
+  accountType  AccountType        @default(BROKERAGE)
+  broker       Broker             @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  snapshots    PositionSnapshot[]
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  @@index([brokerId])
+}
+
+model Instrument {
+  id               String             @id @default(cuid())
+  ticker           String
+  isin             String?            @unique
+  name             String
+  type             InstrumentType
+  currency         String             @default("RUB")
+  sector           String?
+  country          String?
+  currentPrice     Decimal?
+  currentPriceDate DateTime?
+  transactions     Transaction[]
+  snapshots        PositionSnapshot[]
+  watchlistItems   WatchlistItem[]
+  notes            InvestmentNote[]
+  priceUpdates     PriceUpdate[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  @@unique([ticker, currency])
+  @@index([type])
+}
+
+model Transaction {
+  id               String        @id @default(cuid())
+  accountId        String
+  instrumentId     String?
+  date             DateTime
+  operationType    OperationType
+  quantity         Decimal       @default(0)
+  price            Decimal       @default(0)
+  amountGross      Decimal       @default(0)
+  taxAmount        Decimal       @default(0)
+  commissionAmount Decimal       @default(0)
+  amountNet        Decimal       @default(0)
+  accruedInterest  Decimal       @default(0)
+  currency         String        @default("RUB")
+  sourceFileId     String?
+  rawText          String?
+  comment          String?
+  fingerprint      String        @unique
+  account          Account       @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  instrument       Instrument?   @relation(fields: [instrumentId], references: [id], onDelete: SetNull)
+  sourceFile       ImportFile?   @relation(fields: [sourceFileId], references: [id], onDelete: SetNull)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([accountId, date])
+  @@index([instrumentId])
+  @@index([operationType])
+}
+
+model PositionSnapshot {
+  id               String     @id @default(cuid())
+  accountId        String
+  instrumentId     String
+  date             DateTime
+  quantity         Decimal
+  averagePrice     Decimal    @default(0)
+  marketPrice      Decimal    @default(0)
+  marketValue      Decimal    @default(0)
+  unrealizedProfit Decimal    @default(0)
+  account          Account    @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  instrument       Instrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  createdAt        DateTime   @default(now())
+
+  @@unique([accountId, instrumentId, date])
+  @@index([date])
+}
+
+model ImportFile {
+  id                  String           @id @default(cuid())
+  brokerId            String
+  fileName            String
+  fileType            String
+  storagePath         String?
+  uploadedAt          DateTime         @default(now())
+  status              ImportFileStatus @default(UPLOADED)
+  detectedPeriodStart DateTime?
+  detectedPeriodEnd   DateTime?
+  errorMessage        String?
+  broker              Broker           @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+  rows                ImportRow[]
+  transactions        Transaction[]
+
+  @@index([brokerId, uploadedAt])
+  @@index([status])
+}
+
+model ImportRow {
+  id             String          @id @default(cuid())
+  importFileId   String
+  rowIndex       Int
+  rawData        Json
+  normalizedData Json?
+  status         ImportRowStatus @default(NEEDS_REVIEW)
+  warning        String?
+  createdAt      DateTime        @default(now())
+  importFile     ImportFile      @relation(fields: [importFileId], references: [id], onDelete: Cascade)
+
+  @@unique([importFileId, rowIndex])
+  @@index([status])
+}
+
+model WatchlistItem {
+  id              String          @id @default(cuid())
+  instrumentId    String
+  targetBuyPrice  Decimal?
+  targetSellPrice Decimal?
+  priority        Int             @default(3)
+  status          WatchlistStatus  @default(WATCHING)
+  reason          String?
+  sourceName      String?
+  sourceUrl       String?
+  comment         String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  instrument      Instrument      @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+
+  @@index([status, priority])
+}
+
+model InvestmentNote {
+  id            String               @id @default(cuid())
+  instrumentId  String
+  title         String
+  text          String
+  sourceType    InvestmentSourceType @default(OWN_IDEA)
+  sourceName    String?
+  sourceUrl     String?
+  thesis        String?
+  expectedPrice Decimal?
+  expectedDate  DateTime?
+  reviewDate    DateTime?
+  status        InvestmentIdeaStatus @default(ACTIVE)
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  instrument    Instrument           @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+
+  @@index([sourceType])
+  @@index([status])
+}
+
+model PriceUpdate {
+  id           String          @id @default(cuid())
+  instrumentId String
+  price        Decimal
+  currency     String          @default("RUB")
+  source       PriceSourceType @default(MANUAL)
+  pricedAt     DateTime        @default(now())
+  instrument   Instrument      @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+
+  @@index([instrumentId, pricedAt])
+}

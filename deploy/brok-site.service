@@ -1,0 +1,19 @@
+[Unit]
+Description=brok_site Next.js app
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+WorkingDirectory=/var/www/brok_site/current
+EnvironmentFile=/var/www/brok_site/.env.production
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=HOSTNAME=127.0.0.1
+ExecStart=/usr/bin/node .next/standalone/server.js
+Restart=always
+RestartSec=5
+User=www-data
+Group=www-data
+
+[Install]
+WantedBy=multi-user.target

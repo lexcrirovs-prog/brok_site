@@ -71,7 +71,7 @@ async function main() {
     ["OFZ26238", "RU000A1038V6", "ОФЗ 26238", InstrumentType.BOND, "Гособлигации", "Россия", "612.40"],
     ["OFZ26244", "RU000A1074G2", "ОФЗ 26244", InstrumentType.BOND, "Гособлигации", "Россия", "887.10"],
     ["RUCBITR", "RU000A105A95", "Брусника 002P", InstrumentType.BOND, "Недвижимость", "Россия", "1010.20"],
-    ["RUSALB1", "RU000A106T36", "Русал БО-001", InstrumentType.BOND, "Металлы", "Россия", "998.00"],
+    ["RUSALB1", "RU000A105104", "Русал БО-05", InstrumentType.BOND, "Металлы", "Россия", "998.00"],
     ["SBERBOND", "RU000A103661", "Сбербанк БО", InstrumentType.BOND, "Финансы", "Россия", "1004.50"],
   ] as const;
 

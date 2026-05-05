@@ -111,6 +111,14 @@ function scoreSecurity(row: MoexRow, instrument: Instrument, market: "shares" | 
   const isin = asString(row.ISIN)?.toUpperCase();
   const type = asString(row.TYPE)?.toLowerCase() ?? "";
   let score = 0;
+  const matchesMarket =
+    market === "bonds"
+      ? type.includes("bond")
+      : type.includes("share") || type.includes("stock") || type.includes("fund");
+
+  if (!matchesMarket) {
+    return 0;
+  }
 
   if (instrument.isin && isin === instrument.isin.toUpperCase()) {
     score += 100;
@@ -118,12 +126,7 @@ function scoreSecurity(row: MoexRow, instrument: Instrument, market: "shares" | 
   if (secId === instrument.ticker.toUpperCase()) {
     score += 80;
   }
-  if (market === "bonds" && type.includes("bond")) {
-    score += 20;
-  }
-  if (market === "shares" && (type.includes("share") || type.includes("stock") || type.includes("fund"))) {
-    score += 20;
-  }
+  score += 20;
   if (asString(row.MARKETPRICE_BOARDID) || asString(row.PRIMARY_BOARDID)) {
     score += 5;
   }

@@ -16,7 +16,7 @@ export default async function TransactionsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Transactions" />
+      <PageHeader title="Операции" />
       <DataTable
         filterKey="operationType"
         filterLabel="Операция"

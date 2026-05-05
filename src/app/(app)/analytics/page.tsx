@@ -17,7 +17,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Analytics">
+      <PageHeader title="Аналитика">
         <PeriodFilter />
       </PageHeader>
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">

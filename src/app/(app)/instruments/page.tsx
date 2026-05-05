@@ -6,6 +6,7 @@ import { formatMoney } from "@/lib/format";
 import { PageHeader } from "@/components/page-header";
 import { PeriodFilter } from "@/components/period-filter";
 import { DataTable } from "@/components/data-table";
+import { MoexPriceRefreshButton } from "@/components/moex-price-actions";
 
 export const dynamic = "force-dynamic";
 
@@ -20,8 +21,11 @@ export default async function InstrumentsPage({ searchParams }: { searchParams: 
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Instruments">
-        <PeriodFilter />
+      <PageHeader title="Инструменты">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
+          <MoexPriceRefreshButton compact />
+          <PeriodFilter />
+        </div>
       </PageHeader>
       <DataTable
         filterKey="type"
@@ -32,6 +36,7 @@ export default async function InstrumentsPage({ searchParams }: { searchParams: 
           { key: "isin", label: "ISIN" },
           { key: "type", label: "Тип" },
           { key: "price", label: "Цена", align: "right" },
+          { key: "priceDate", label: "Обновлено" },
           { key: "value", label: "Стоимость", align: "right" },
           { key: "profit", label: "Прибыль", align: "right" },
           { key: "dividends", label: "Дивиденды", align: "right" },
@@ -46,6 +51,7 @@ export default async function InstrumentsPage({ searchParams }: { searchParams: 
             isin: instrument.isin ?? "",
             type: instrument.type,
             price: instrument.currentPrice ? formatMoney(instrument.currentPrice, instrument.currency) : "н/д",
+            priceDate: instrument.currentPriceDate ? new Intl.DateTimeFormat("ru-RU").format(instrument.currentPriceDate) : "н/д",
             value: item ? formatMoney(item.marketValue, instrument.currency) : formatMoney(0, instrument.currency),
             profit: item ? formatMoney(item.profit, instrument.currency) : formatMoney(0, instrument.currency),
             dividends: item ? formatMoney(item.dividends, instrument.currency) : formatMoney(0, instrument.currency),

@@ -20,7 +20,7 @@ export default async function BrokersPage({ searchParams }: { searchParams: Prom
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Brokers">
+      <PageHeader title="Брокеры">
         <PeriodFilter />
       </PageHeader>
       <DataTable

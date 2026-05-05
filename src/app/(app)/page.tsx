@@ -23,7 +23,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Dashboard">
+      <PageHeader title="Дашборд">
         <PeriodFilter />
       </PageHeader>
 

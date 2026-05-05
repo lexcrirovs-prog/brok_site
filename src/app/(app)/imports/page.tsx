@@ -17,7 +17,7 @@ export default async function ImportsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Import Reports" />
+      <PageHeader title="Импорт отчетов" />
       <UploadReportForm brokers={brokers.map((broker) => ({ id: broker.id, name: broker.name }))} />
       <DataTable
         filterKey="status"

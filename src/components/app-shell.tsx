@@ -16,15 +16,15 @@ import {
 import clsx from "clsx";
 
 const navItems = [
-  { href: "/", label: "Dashboard", icon: Home },
-  { href: "/transactions", label: "Transactions", icon: Table2 },
-  { href: "/imports", label: "Import Reports", icon: FileUp },
-  { href: "/brokers", label: "Brokers", icon: Landmark },
-  { href: "/instruments", label: "Instruments", icon: BriefcaseBusiness },
-  { href: "/watchlist", label: "Watchlist", icon: Bell },
-  { href: "/notes", label: "Notes", icon: NotebookText },
-  { href: "/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/", label: "Дашборд", icon: Home },
+  { href: "/transactions", label: "Операции", icon: Table2 },
+  { href: "/imports", label: "Импорт отчетов", icon: FileUp },
+  { href: "/brokers", label: "Брокеры", icon: Landmark },
+  { href: "/instruments", label: "Инструменты", icon: BriefcaseBusiness },
+  { href: "/watchlist", label: "Избранное", icon: Bell },
+  { href: "/notes", label: "Заметки", icon: NotebookText },
+  { href: "/analytics", label: "Аналитика", icon: BarChart3 },
+  { href: "/settings", label: "Настройки", icon: Settings },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {

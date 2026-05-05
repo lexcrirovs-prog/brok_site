@@ -11,6 +11,7 @@ import { PageHeader } from "@/components/page-header";
 import { PeriodFilter } from "@/components/period-filter";
 import { StatCard } from "@/components/stat-card";
 import { DataTable } from "@/components/data-table";
+import { MoexPriceRefreshButton } from "@/components/moex-price-actions";
 
 export const dynamic = "force-dynamic";
 
@@ -51,7 +52,10 @@ export default async function InstrumentDetailPage({
   return (
     <div className="space-y-6">
       <PageHeader title={`${instrument.ticker} · ${instrument.name}`}>
-        <PeriodFilter />
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
+          <MoexPriceRefreshButton instrumentId={instrument.id} compact />
+          <PeriodFilter />
+        </div>
       </PageHeader>
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Тип" value={instrument.type} detail={instrument.isin ?? undefined} />

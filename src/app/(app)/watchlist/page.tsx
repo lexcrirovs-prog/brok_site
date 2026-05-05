@@ -17,7 +17,7 @@ export default async function WatchlistPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Watchlist" />
+      <PageHeader title="Избранное" />
       <AddWatchlistForm instruments={instruments.map((instrument) => ({ id: instrument.id, ticker: instrument.ticker, name: instrument.name }))} />
       <DataTable
         filterKey="status"

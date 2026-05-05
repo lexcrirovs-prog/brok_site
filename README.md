@@ -185,6 +185,19 @@ LKOH,7400,RUB
 - вывод не является убытком;
 - XIRR строится на внешних денежных потоках и терминальной стоимости портфеля.
 
+## Котировки MOEX
+
+Автообновление цен лежит в `src/lib/market-data/moexIssService.ts`.
+Кнопки обновления есть на страницах `Инструменты`, `Инструмент` и `Настройки`.
+
+Источник данных — MOEX ISS:
+
+- акции и фонды: `engines/stock/markets/shares`;
+- облигации: `engines/stock/markets/bonds`;
+- поиск облигаций работает по ISIN, поэтому внутренний тикер может отличаться от биржевого `SECID`;
+- облигационные котировки MOEX в процентах от номинала переводятся в цену одной бумаги;
+- используется бесплатный режим с задержкой без подписки.
+
 ## Проверки
 
 ```bash
@@ -237,5 +250,6 @@ DATABASE_URL="file:/home/p/premiuig/kotelgavno.ru/app-data/portfolio.db" npm run
 
 - Next.js route handlers: https://nextjs.org/docs/app/getting-started/route-handlers
 - Prisma schema: https://www.prisma.io/docs/orm/prisma-schema
+- MOEX ISS API: https://www.moex.com/a2193
 - Decimal.js: https://mikemcl.github.io/decimal.js/
 - Recharts: https://recharts.org/

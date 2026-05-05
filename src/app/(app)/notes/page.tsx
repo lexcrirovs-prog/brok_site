@@ -17,7 +17,7 @@ export default async function NotesPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Notes" />
+      <PageHeader title="Заметки" />
       <AddNoteForm instruments={instruments.map((instrument) => ({ id: instrument.id, ticker: instrument.ticker, name: instrument.name }))} />
       <DataTable
         filterKey="status"
